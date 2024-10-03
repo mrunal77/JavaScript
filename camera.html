@@ -20,29 +20,31 @@
         /* Container holding video and controls */
         .container {
             position: relative;
-            width: calc(100vw - 20px); /* Subtract 30px padding from each side */
-            height: calc(100vh - 20px); /* Subtract 30px padding from each side */
-            padding: 30px; /* Add 30px padding to all sides */
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100vh;
         }
 
-        /* Video element adjusts to remaining space */
+        /* Video element with aspect ratio */
         #videoElement {
-            width: 100%;
-            height: calc(100% - 60px); /* Leave space for buttons at the bottom */
-            object-fit: contain;
+            width: 100%;  /* Full width */
+            max-width: 100%;  /* Ensure it doesn't overflow horizontally */
+            height: auto;  /* Adjust height automatically to keep aspect ratio */
+            aspect-ratio: 16 / 9;  /* Maintain 16:9 aspect ratio */
+            background-color: black; /* Placeholder background for when video is not loaded */
         }
 
-        /* Buttons are centered at the bottom */
+        /* Controls are fixed at the bottom */
         .controls {
-            height: 60px; /* Fixed height for control buttons */
+            width: 100%;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 0px;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            gap: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         button {
@@ -58,6 +60,10 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        canvas {
+            display: none;
+        }
     </style>
 </head>
 
@@ -68,7 +74,7 @@
             <button id="captureButton">Capture</button>
             <button id="recordButton">Record</button>
             <button id="switchCameraButton">Switch Camera</button>
-            <canvas id="canvas" style="display:none;"></canvas>
+            <canvas id="canvas"></canvas>
         </div>
     </div>
     <script src="camera.js"></script>
