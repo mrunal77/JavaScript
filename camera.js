@@ -1,14 +1,12 @@
 let mediaRecorder;
 const recordedChunks = [];
-let currentStream;
+let currentStream = null;
+let usingFrontCamera = true; // Track if we're using the front camera
 
-// Function to get the available video input devices (cameras)
-function getVideoInputs() {
-  return navigator.mediaDevices
-    .enumerateDevices()
-    .then((devices) =>
-      devices.filter((device) => device.kind === "videoinput")
-    );
+// Function to get video input devices (cameras)
+async function getVideoInputs() {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  return devices.filter((device) => device.kind === "videoinput");
 }
 
 // Function to switch camera
@@ -18,20 +16,24 @@ async function switchCamera() {
   }
 
   const videoInputs = await getVideoInputs();
-  const nextDeviceIndex =
-    videoInputs.findIndex((device) => device.deviceId !== currentStream.id) + 1;
-  const nextDevice = videoInputs[nextDeviceIndex % videoInputs.length];
 
-  navigator.mediaDevices
-    .getUserMedia({ video: { deviceId: nextDevice.deviceId } })
-    .then(function (stream) {
-      var videoElement = document.getElementById("videoElement");
-      videoElement.srcObject = stream;
-      currentStream = stream;
-    })
-    .catch(function (err) {
-      console.error("Error switching camera: ", err);
-    });
+  // Switch between front and back camera
+  usingFrontCamera = !usingFrontCamera;
+
+  const constraints = {
+    video: {
+      facingMode: usingFrontCamera ? "user" : "environment", // 'user' is front, 'environment' is back
+    },
+  };
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const videoElement = document.getElementById("videoElement");
+    videoElement.srcObject = stream;
+    currentStream = stream;
+  } catch (err) {
+    console.error("Error switching camera: ", err);
+  }
 }
 
 // Get access to the camera
